@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Laja Fresh - Live App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #f3f4f6; -webkit-tap-highlight-color: transparent; }
+        ::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+        .app-container { max-width: 480px; margin: 0 auto; background-color: #ffffff; min-height: 100vh; position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+        .product-card:active { transform: scale(0.96); }
+        .edit-mode { background-color: #fefce8; border: 2px solid #eab308; }
+    </style>
+</head>
+<body>
+
+<div class="app-container" id="main-container">
+
+    <!-- ========================================== -->
+    <!-- USER APP UI (Customer View)                -->
+    <!-- ========================================== -->
+    <div id="user-view" class="hidden pb-20">
+        
+        <header class="bg-white p-4 sticky top-0 z-40 shadow-sm flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-green-600">Laja Fresh</h1>
+                <p class="text-xs text-gray-500 font-medium flex items-center mt-1">
+                    <i class="fa-solid fa-location-dot text-red-500 mr-1"></i> Delivery in 10 mins
+                </p>
+            </div>
+            <div class="bg-gray-100 p-2 rounded-full h-10 w-10 flex items-center justify-center text-gray-600">
+                <i class="fa-regular fa-user text-lg"></i>
+            </div>
+        </header>
+
+        <!-- Search Bar -->
+        <div class="px-4 mt-2">
+            <div class="relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400"></i>
+                <input type="text" placeholder="Search products..." class="w-full bg-gray-100 rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none">
+            </div>
+        </div>
+
+        <!-- SPECIAL OFFERS SECTION -->
+        <div id="special-offer-section" class="bg-orange-50 pb-4 hidden mt-4">
+            <div class="bg-orange-500 text-white text-center py-1 font-bold text-xs uppercase tracking-widest shadow-sm">
+                🔥 Exclusive Offers 🔥
+            </div>
+            <div id="special-offer-list" class="px-4 mt-3 flex flex-col gap-3"></div>
+        </div>
+
+        <!-- Category Filter -->
+        <div class="px-4 py-3 mt-2 flex gap-3 overflow-x-auto hide-scroll border-b border-gray-100 bg-white">
+            <button onclick="filterProducts('all')" id="btn-all" class="cat-btn bg-green-100 text-green-700 border border-green-300 px-4 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap">All Items</button>
+            <button onclick="filterProducts('fruits')" id="btn-fruits" class="cat-btn bg-white text-gray-600 border border-gray-200 px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap">🍎 Fruits</button>
+            <button onclick="filterProducts('veg')" id="btn-veg" class="cat-btn bg-white text-gray-600 border border-gray-200 px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap">🥦 Vegetables</button>
+            <button onclick="filterProducts('dairy')" id="btn-dairy" class="cat-btn bg-white text-gray-600 border border-gray-200 px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap">🥛 Dairy</button>
+        </div>
+
+        <!-- Normal Product Grid -->
+        <div class="p-4 grid grid-cols-2 gap-4" id="user-product-grid"></div>
+
+        <!-- FOOTER SECTION -->
+        <div class="bg-gray-100 mt-4 rounded-t-3xl p-6 text-center border-t border-gray-200 mb-4">
+            <h3 class="font-bold text-gray-800 text-lg">Laja Fresh</h3>
+            <p class="text-xs text-gray-500 mt-1 mb-4">Farm fresh products, delivered fast.</p>
+            <div class="bg-white p-3 rounded-xl shadow-sm text-left mb-3">
+                <p class="text-xs font-bold text-gray-800 mb-1"><i class="fa-solid fa-map-location-dot text-red-500 mr-1"></i> Store Address:</p>
+                <p class="text-xs text-gray-600 leading-relaxed">Shop no 5, Maharani enclave, 40foot road, Aanand vatika, Hastal extension, Uttam Nagar, New Delhi - 59</p>
+                <p class="text-[10px] font-bold text-blue-600 mt-1 bg-blue-50 inline-block px-2 py-1 rounded">Search on Google Map: Laja Fresh</p>
+            </div>
+            <div class="flex gap-2 justify-center">
+                <a href="tel:+919296765753" class="bg-green-100 text-green-700 px-3 py-2 rounded-lg text-xs font-bold flex items-center"><i class="fa-solid fa-phone mr-1"></i> 92967 65753</a>
+                <a href="tel:+918340261340" class="bg-green-100 text-green-700 px-3 py-2 rounded-lg text-xs font-bold flex items-center"><i class="fa-solid fa-phone mr-1"></i> 83402 61340</a>
+            </div>
+        </div>
+
+        <div class="fixed bottom-0 w-full max-w-[480px] bg-white border-t border-gray-200 flex justify-around items-center py-3 px-2 z-50">
+            <div class="flex flex-col items-center text-green-600"><i class="fa-solid fa-house text-xl mb-1"></i><span class="text-[10px] font-bold">Home</span></div>
+            <div class="flex flex-col items-center text-gray-400"><i class="fa-solid fa-border-all text-xl mb-1"></i><span class="text-[10px] font-semibold">Categories</span></div>
+            <div class="flex flex-col items-center text-gray-400 relative"><i class="fa-solid fa-cart-shopping text-xl mb-1"></i><span class="text-[10px] font-semibold">Cart</span></div>
+        </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- ADMIN PANEL UI (Secret View)               -->
+    <!-- ========================================== -->
+    <div id="admin-view" class="hidden pb-10 bg-gray-50 min-h-screen">
+        <header class="bg-gray-800 text-white p-4 sticky top-0 z-40 shadow-md flex justify-between items-center">
+            <div>
+                <h1 class="text-xl font-bold">Admin Control</h1>
+                <p class="text-xs text-green-400 font-semibold">Add or Edit Products</p>
+            </div>
+            <a href="?" class="bg-white text-gray-800 px-3 py-1 rounded-lg text-xs font-bold">
+                <i class="fa-solid fa-eye mr-1"></i> View App
+            </a>
+        </header>
+
+        <div class="p-4">
+            <div id="form-container" class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="font-bold text-gray-800" id="form-title"><i class="fa-solid fa-plus-circle text-green-500 mr-1"></i> Add Product</h2>
+                    <button id="cancel-btn" onclick="cancelEdit()" class="hidden text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded font-bold">Cancel Edit</button>
+                </div>
+                
+                <form id="add-product-form" onsubmit="saveProduct(event)">
+                    <div class="grid grid-cols-2 gap-3 mb-3">
+                        <div><label class="text-xs text-gray-500 font-semibold">Product Name</label><input type="text" id="p-name" required class="w-full mt-1 border border-gray-300 rounded-lg p-2 text-sm focus:border-green-500"></div>
+                        <div><label class="text-xs text-gray-500 font-semibold">Normal Price (₹)</label><input type="number" id="p-price" required class="w-full mt-1 border border-gray-300 rounded-lg p-2 text-sm focus:border-green-500"></div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3 mb-3">
+                        <div><label class="text-xs text-gray-500 font-semibold">Weight/Qty</label><input type="text" id="p-qty" required class="w-full mt-1 border border-gray-300 rounded-lg p-2 text-sm focus:border-green-500"></div>
+                        <div><label class="text-xs text-gray-500 font-semibold">Category</label>
+                            <select id="p-cat" class="w-full mt-1 border border-gray-300 rounded-lg p-2 text-sm focus:border-green-500">
+                                <option value="fruits">Fruits</option><option value="veg">Vegetables</option><option value="dairy">Dairy</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3"><label class="text-xs text-gray-500 font-semibold">Image URL</label><input type="url" id="p-img" required class="w-full mt-1 border border-gray-300 rounded-lg p-2 text-sm focus:border-green-500"></div>
+
+                    <!-- SPECIAL OFFER TOGGLE -->
+                    <div class="mb-3 border-t border-gray-100 pt-3">
+                        <label class="flex items-center cursor-pointer bg-orange-50 p-2 rounded-lg border border-orange-200">
+                            <input type="checkbox" id="p-special-toggle" onchange="toggleSpecialFields()" class="sr-only peer">
+                            <div class="relative w-9 h-5 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-orange-500"></div>
+                            <span class="ms-3 text-sm font-bold text-orange-700">Apply Special Offer</span>
+                        </label>
+                    </div>
+
+                    <div id="special-fields" class="hidden bg-orange-50 p-3 rounded-lg border border-orange-200 mb-3 grid grid-cols-2 gap-3">
+                        <div><label class="text-[10px] text-orange-800 font-bold uppercase">Offer Name</label><input type="text" id="p-offer-name" placeholder="E.g. Diwali Offer" class="w-full mt-1 border border-orange-300 rounded-lg p-2 text-sm bg-white"></div>
+                        <div><label class="text-[10px] text-orange-800 font-bold uppercase">Special Rate (₹)</label><input type="number" id="p-special-price" placeholder="100" class="w-full mt-1 border border-orange-300 rounded-lg p-2 text-sm bg-white"></div>
+                    </div>
+
+                    <button type="submit" id="submit-btn" class="w-full bg-green-600 text-white font-bold py-3 rounded-xl mt-2 shadow-md">Add to App</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="px-4 mt-2">
+            <h2 class="font-bold text-gray-800 mb-3">Inventory List <span id="total-count" class="text-xs bg-gray-200 px-2 py-1 rounded-full ml-1 text-gray-700">0</span></h2>
+            <div id="admin-product-list" class="flex flex-col gap-3"></div>
+            <!-- Data Reset Button for Emergencies -->
+            <button onclick="resetAllData()" class="w-full mt-6 bg-red-100 text-red-600 font-bold py-3 rounded-xl text-sm mb-10 border border-red-200">
+                <i class="fa-solid fa-triangle-exclamation mr-1"></i> Reset Factory Data
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- 1. ADMIN CHECK ---
+    const urlParams = new URLSearchParams(window.location.search);
+    const isAdminMode = urlParams.get('admin') === 'true';
+
+    if (isAdminMode) document.getElementById('admin-view').classList.remove('hidden');
+    else document.getElementById('user-view').classList.remove('hidden');
+
+    // --- 2. DATA MANAGEMENT (WITH AUTO-FIX FOR OLD DATA) ---
+    let editingId = null; 
+    const defaultProducts = [
+        { id: 1, name: "New Zealand Kiwi", price: 130, qty: "3 pcs", cat: "fruits", img: "https://images.unsplash.com/photo-1585059895524-72359e06138a?w=400&q=80", isSpecial: true, specialPrice: 100, offerName: "Super Saver Offer" },
+        { id: 2, name: "Fresh Red Apple", price: 140, qty: "1 kg", cat: "fruits", img: "https://images.unsplash.com/photo-1560806887-1e4cd0b6faa6?w=400&q=80", isSpecial: false },
+        { id: 3, name: "Amul Taaza Milk", price: 27, qty: "500 ml", cat: "dairy", img: "https://images.unsplash.com/photo-1550583724-b2692b85b150?w=400&q=80", isSpecial: false }
+    ];
+
+    let rawData = localStorage.getItem('lajaProducts');
+    let products = [];
+    
+    if (rawData) {
+        try {
+            products = JSON.parse(rawData);
+            // Auto-fix loop for old products that don't have offer properties
+            products = products.map(p => ({
+                ...p,
+                isSpecial: p.isSpecial || false,
+                specialPrice: p.specialPrice || null,
+                offerName: p.offerName || ""
+            }));
+        } catch(e) {
+            products = [...defaultProducts]; // If data is corrupt, load default
+        }
+    }
+    
+    if (!products || products.length === 0) {
+        products = [...defaultProducts];
+        saveData();
+    }
+    let currentFilter = 'all';
+
+    // --- 3. UI FUNCTIONS ---
+    function toggleSpecialFields() {
+        const isChecked = document.getElementById('p-special-toggle').checked;
+        document.getElementById('special-fields').classList.toggle('hidden', !isChecked);
+        if(!isChecked) {
+            document.getElementById('p-offer-name').value = '';
+            document.getElementById('p-special-price').value = '';
+        }
+    }
+
+    function renderUserApp() {
+        if(isAdminMode) return;
+        const grid = document.getElementById('user-product-grid');
+        const offerSection = document.getElementById('special-offer-section');
+        const offerList = document.getElementById('special-offer-list');
+        
+        grid.innerHTML = ''; 
+        offerList.innerHTML = '';
+
+        const specials = products.filter(p => p.isSpecial);
+        if(specials.length > 0 && currentFilter === 'all') {
+            offerSection.classList.remove('hidden');
+            specials.forEach(p => {
+                const labelName = p.offerName || "Special Offer";
+                offerList.innerHTML += `
+                    <div class="bg-white border-2 border-orange-200 rounded-xl p-3 flex gap-3 relative overflow-hidden shadow-sm">
+                        <span class="absolute top-0 left-0 bg-red-600 text-white text-[10px] font-bold px-3 py-1 rounded-br-lg z-10 uppercase tracking-wide">${labelName}</span>
+                        <div class="w-24 h-24 mt-4 relative rounded-lg overflow-hidden bg-gray-50 flex-shrink-0">
+                            <img src="${p.img}" class="object-cover w-full h-full" onerror="this.src='https://via.placeholder.com/150'">
+                        </div>
+                        <div class="flex flex-col justify-center mt-3 flex-1">
+                            <h3 class="font-bold text-gray-800 text-sm leading-tight">${p.name}</h3>
+                            <p class="text-[10px] text-gray-500 mt-1">${p.qty}</p>
+                            <div class="mt-2 flex items-baseline gap-2">
+                                <span class="text-xl font-black text-red-600">₹${p.specialPrice}</span>
+                                <span class="text-xs text-gray-400 line-through font-semibold">₹${p.price}</span>
+                            </div>
+                            <button onclick="alert('Offer Item Added!')" class="mt-2 text-xs bg-orange-500 hover:bg-orange-600 text-white font-bold py-1.5 px-3 rounded-lg uppercase w-full">Add To Cart</button>
+                        </div>
+                    </div>
+                `;
+            });
+        } else {
+            offerSection.classList.add('hidden');
+        }
+
+        const filteredProducts = currentFilter === 'all' ? products : products.filter(p => p.cat === currentFilter);
+        filteredProducts.forEach(p => {
+            const displayPrice = p.isSpecial ? p.specialPrice : p.price;
+            const crossPriceHTML = p.isSpecial ? `<span class="text-[10px] text-gray-400 line-through mr-1">₹${p.price}</span>` : '';
+            const tagHTML = p.isSpecial ? `<span class="absolute top-0 right-0 bg-orange-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-bl-lg rounded-tr-lg z-10 shadow-sm">OFFER</span>` : '';
+
+            grid.innerHTML += `
+                <div class="product-card bg-white rounded-xl p-3 border border-gray-100 shadow-sm flex flex-col justify-between relative">
+                    ${tagHTML}
+                    <div class="relative w-full h-28 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden">
+                        <img src="${p.img}" alt="${p.name}" class="object-cover w-full h-full" onerror="this.src='https://via.placeholder.com/150'">
+                    </div>
+                    <div class="mt-2">
+                        <p class="text-xs text-gray-500 font-medium">${p.qty}</p>
+                        <h3 class="text-sm font-semibold text-gray-800 leading-tight">${p.name}</h3>
+                    </div>
+                    <div class="mt-3 flex justify-between items-center">
+                        <div class="flex flex-col">
+                            ${crossPriceHTML}
+                            <p class="text-sm font-bold ${p.isSpecial ? 'text-red-600' : 'text-gray-900'}">₹${displayPrice}</p>
+                        </div>
+                        <button onclick="alert('Item Added!')" class="bg-green-50 text-green-600 border border-green-200 px-3 py-1 rounded-lg text-xs font-bold uppercase">ADD</button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    function renderAdminPanel() {
+        if(!isAdminMode) return; 
+        const list = document.getElementById('admin-product-list');
+        document.getElementById('total-count').innerText = products.length;
+        list.innerHTML = '';
+
+        products.forEach(p => {
+            const statusLabel = p.isSpecial 
+                ? `<span class="bg-orange-100 text-orange-700 text-[9px] font-bold px-2 py-0.5 rounded uppercase ml-2">${p.offerName || 'Offer'} @ ₹${p.specialPrice}</span>` 
+                : `<span class="bg-gray-100 text-gray-500 text-[9px] font-bold px-2 py-0.5 rounded uppercase ml-2">Normal Rate</span>`;
+
+            list.innerHTML += `
+                <div class="bg-white p-3 rounded-xl border border-gray-200 flex items-center shadow-sm">
+                    <img src="${p.img}" class="w-14 h-14 object-cover rounded-lg bg-gray-50" onerror="this.src='https://via.placeholder.com/150'">
+                    <div class="ml-3 flex-1">
+                        <h4 class="text-sm font-bold text-gray-800">${p.name}</h4>
+                        <div class="flex items-center mt-1">
+                            <p class="text-xs text-gray-500">${p.qty}</p>
+                            ${statusLabel}
+                        </div>
+                        <p class="text-sm font-bold text-gray-900 mt-1">₹${p.price}</p>
+                    </div>
+                    <div class="flex flex-col gap-2 ml-2">
+                        <button onclick="startEdit(${p.id})" class="h-7 w-7 bg-blue-50 text-blue-600 rounded-md flex items-center justify-center border border-blue-100 shadow-sm"><i class="fa-solid fa-pen text-[10px]"></i></button>
+                        <button onclick="deleteProduct(${p.id})" class="h-7 w-7 bg-red-50 text-red-500 rounded-md flex items-center justify-center border border-red-100 shadow-sm"><i class="fa-solid fa-trash text-[10px]"></i></button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    // --- 4. DATA ACTIONS ---
+    function saveProduct(event) {
+        event.preventDefault();
+        
+        const isSpecial = document.getElementById('p-special-toggle').checked;
+        const offerNameInput = document.getElementById('p-offer-
